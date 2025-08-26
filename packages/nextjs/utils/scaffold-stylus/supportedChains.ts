@@ -1,5 +1,13 @@
 import { defineChain } from "viem";
-import { arbitrum, arbitrumSepolia, arbitrumNova, eduChainTestnet, eduChain, superposition } from "viem/chains";
+import {
+  arbitrum,
+  arbitrumSepolia,
+  arbitrumNova,
+  eduChainTestnet,
+  eduChain,
+  superposition,
+  mainnet,
+} from "viem/chains";
 
 const arbitrumNitro = defineChain({
   id: 412346,
@@ -69,6 +77,7 @@ const superpositionTestnet = defineChain({
 });
 
 export {
+  mainnet,
   arbitrum,
   arbitrumSepolia,
   arbitrumNova,
