@@ -49,6 +49,12 @@ sol! {
     event GreetingChange(address indexed greetingSetter, string newGreeting, bool premium, uint256 value);
 }
 
+// Multi-Send events
+sol! {
+    event MultiSend(address indexed sender, address indexed token, uint256 totalAmount, uint256 recipientCount);
+    event MultiSendTransfer(address indexed sender, address indexed token, address indexed to, uint256 amount, bool success);
+}
+
 // Define persistent storage using the Solidity ABI.
 // `YourContract` will be the entrypoint.
 sol_storage! {
@@ -149,6 +155,74 @@ impl YourContract {
     pub fn receive_ether(&self) {
         // This function allows the contract to receive ETH
         // The #[payable] attribute allows it to accept value
+    }
+
+    /// Batch send native ETH to multiple recipients with per-recipient amounts
+    /// Requirements:
+    /// - recipients length equals amounts length
+    /// - at least 1 recipient (recommend 5+ for UI challenge, but not enforced here)
+    /// - no zero address recipients
+    /// - amounts > 0
+    /// - msg.value must equal the sum of all amounts
+    #[payable]
+    pub fn multi_send_eth(&mut self, recipients: Vec<Address>, amounts: Vec<U256>) {
+        if recipients.len() == 0 {
+            panic!("No recipients");
+        }
+        if recipients.len() != amounts.len() {
+            panic!("Recipients and amounts length mismatch");
+        }
+
+        // basic per-item checks and total calculation
+        let mut total: U256 = U256::ZERO;
+        for i in 0..recipients.len() {
+            let to = recipients[i];
+            let amt = amounts[i];
+            if to == Address::ZERO {
+                panic!("Invalid recipient address");
+            }
+            if amt == U256::ZERO {
+                panic!("Amount must be greater than zero");
+            }
+            total = total + amt;
+        }
+
+        let sender: Address = self.vm().msg_sender();
+        let msg_value = self.vm().msg_value();
+        if msg_value != total {
+            panic!("msg.value must equal total");
+        }
+
+        // Execute transfers sequentially; emit per-transfer status
+        for i in 0..recipients.len() {
+            let to = recipients[i];
+            let amt = amounts[i];
+            let res = self.vm().transfer_eth(to, amt);
+            let success = res.is_ok();
+            log(
+                self.vm(),
+                MultiSendTransfer {
+                    sender,
+                    token: Address::ZERO,
+                    to,
+                    amount: amt,
+                    success,
+                },
+            );
+            if !success {
+                panic!("ETH transfer failed");
+            }
+        }
+
+        log(
+            self.vm(),
+            MultiSend {
+                sender,
+                token: Address::ZERO,
+                totalAmount: total,
+                recipientCount: U256::from(recipients.len() as u64),
+            },
+        );
     }
 }
 

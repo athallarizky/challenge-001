@@ -2,13 +2,13 @@
 
 import React from "react";
 
-// Read defined tokens for each network
 import { useFetchPortofolio } from "./hooks/useFetchPortofolio";
 import portofolioUtils from "./utils/portofolioUtils";
-import StatCard from "./components/StatCard";
 import { arbitrum, arbitrumNitro } from "~~/utils/scaffold-stylus/supportedChains";
+
 import BalanceTable from "./components/BalanceTable";
-import NetworkInfoCard from "./components/NetworkInfoCard";
+import StatCard from "~~/components/shared/StatCard";
+import NetworkInfoCard from "~~/components/shared/NetworkInfoCard";
 
 export default function Page() {
   const {
@@ -29,15 +29,9 @@ export default function Page() {
 
   return (
     <div className="p-6 max-w-5xl mx-auto text-gray-100">
-      <h1 className="text-2xl font-semibold">
-        Multi‑Read Portfolio ({portofolioUtils.getNetworkNameByChainId(selectedChainId)})
-      </h1>
+      <h1 className="text-2xl font-semibold">Challenge 01: Multi‑Read Portfolio</h1>
 
-      <div className="mt-2 text-sm text-gray-400">
-        Connected to: {portofolioUtils.getNetworkNameByChainId(selectedChainId)} (Chain ID: {selectedChainId})
-      </div>
-
-      <NetworkInfoCard selectedChainId={selectedChainId} walletAddress={walletAddress} tokenConfigs={tokenConfigs} />
+      <NetworkInfoCard selectedChainId={selectedChainId} walletAddress={walletAddress} />
 
       <div className="mt-4 grid md:grid-cols-[auto_1fr_auto_auto] gap-3">
         <select

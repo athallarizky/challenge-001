@@ -1,5 +1,3 @@
-import { arbitrum, arbitrumNitro } from "~~/utils/scaffold-stylus/supportedChains";
-
 const portofolioUtils = {
   async pricesUSDFromCoingecko(ids: string[]) {
     const url = `https://api.coingecko.com/api/v3/simple/price?ids=${encodeURIComponent(
@@ -16,20 +14,6 @@ const portofolioUtils = {
 
   convertToUSD(number: number) {
     return number.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 2 });
-  },
-
-  getNetworkNameByChainId(chainId: number) {
-    if (chainId === 1) return "Ethereum";
-    if (chainId === arbitrum.id) return "Arbitrum";
-    if (chainId === arbitrumNitro.id) return "Local Dev";
-    return "Unknown";
-  },
-
-  getRpcUrlByChainId(chainId: number) {
-    if (chainId === 1) return "https://eth.llamarpc.com";
-    if (chainId === arbitrum.id) return "https://arb1.arbitrum.io/rpc";
-    if (chainId === arbitrumNitro.id) return "http://localhost:8547";
-    return "https://arb1.arbitrum.io/rpc";
   },
 
   isValidAddress(address: string) {
