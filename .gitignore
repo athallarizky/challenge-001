@@ -14,4 +14,3 @@ node_modules
 !.vscode/settings.json
 .idea
 .vercel
-config.bat
